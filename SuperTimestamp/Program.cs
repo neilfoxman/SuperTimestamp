@@ -204,7 +204,7 @@ namespace SuperTimestamp
 
             // Construct Entire new path
             // add backslash if needed
-            string targetPathNew = targetDirName + targetNameNew + targetExt;
+            string targetPathNew = targetDirName + '\\' + targetNameNew + targetExt;
             DebugOutput("targetPathNew:" + targetPathNew);
 
 
@@ -212,15 +212,15 @@ namespace SuperTimestamp
 
 
 
-            //// Rename file using Move() method
-            //if (ftype == FTYPE.DIR)
-            //{
-            //    System.IO.Directory.Move(targetPathPrev, newPath);
-            //}
-            //else
-            //{
-            //    System.IO.File.Move(targetPathPrev, newPath);
-            //}
+            // Rename file using Move() method
+            if (ftype == FTYPE.DIR)
+            {
+                System.IO.Directory.Move(targetPathPrev, targetPathNew);
+            }
+            else
+            {
+                System.IO.File.Move(targetPathPrev, targetPathNew);
+            }
 
 
 
