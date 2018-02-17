@@ -232,7 +232,7 @@ namespace SuperTimestamp
 
 
 
-            Console.ReadKey();
+            //Console.ReadKey();
         }
 
         public static void DebugOutput(string s)
