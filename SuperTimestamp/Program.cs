@@ -66,6 +66,7 @@ namespace SuperTimestamp
             string targetExt = Path.GetExtension(targetPathPrev);
 
             //// Strip backslash off drive letter paths - only does for drive letter paths for some reason
+            ////  Looks like this isn't actually needed 20180217
             //if (targetDirName[targetDirName.Length - 1] == '\\')
             //{
             //    DebugOutput("Unnecessary backslash found in directory.");
@@ -201,8 +202,8 @@ namespace SuperTimestamp
 
             // Construct Entire new path
             // add backslash if needed
-            //string targetPathNew = targetDirName + '\\' + targetNameNew + targetExt;
-            string targetPathNew = System.IO.Path.Combine(new string[] { targetDirName, targetNameNew, targetExt });
+            string targetPathNew = targetDirName + '\\' + targetNameNew + targetExt;
+            //string targetPathNew = System.IO.Path.Combine(new string[] { targetDirName, targetNameNew, targetExt }); // adds a slash between name and ext
             DebugOutput("targetPathNew:" + targetPathNew);
 
 
@@ -211,14 +212,22 @@ namespace SuperTimestamp
 
 
             // Copy file or directory
-            if (ftype == FTYPE.DIR)
+            try
             {
-                DirectoryCopy(targetPathPrev, targetPathNew, true);
+                if (ftype == FTYPE.DIR)
+                {
+                    DirectoryCopy(targetPathPrev, targetPathNew, true);
+                }
+                else
+                {
+                    System.IO.File.Copy(targetPathPrev, targetPathNew);
+                }
             }
-            else
+            catch(Exception ex)
             {
-                System.IO.File.Copy(targetPathPrev, targetPathNew);
+                DebugOutput(ex.Message);
             }
+            
 
 
 
