@@ -13,7 +13,8 @@ namespace SuperTimestamp
     {
 
         public static bool DEBUGGING = true;
-        public enum FTYPE { DIR, FILE};
+
+        public enum FTYPE { DIR, FILE };
 
         static void Main(string[] args)
         {
@@ -35,10 +36,6 @@ namespace SuperTimestamp
                 targetPathPrev += " " + args[argidx];
             }
             DebugOutput("targetPathPrev:" + targetPathPrev);
-
-
-
-
 
 
 
@@ -68,13 +65,13 @@ namespace SuperTimestamp
             string targetNamePrev = Path.GetFileNameWithoutExtension(targetPathPrev);
             string targetExt = Path.GetExtension(targetPathPrev);
 
-            // Strip backslash off drive letter paths - only does for drive letter paths for some reason
-            if (targetDirName[targetDirName.Length - 1] == '\\')
-            {
-                DebugOutput("Unnecessary backslash found in directory.");
-                DebugOutput("targetDirName Was:" + targetDirName);
-                targetDirName = targetDirName.Substring(0, targetDirName.Length - 1);
-            }
+            //// Strip backslash off drive letter paths - only does for drive letter paths for some reason
+            //if (targetDirName[targetDirName.Length - 1] == '\\')
+            //{
+            //    DebugOutput("Unnecessary backslash found in directory.");
+            //    DebugOutput("targetDirName Was:" + targetDirName);
+            //    targetDirName = targetDirName.Substring(0, targetDirName.Length - 1);
+            //}
 
             // For Debugging
             DebugOutput("targetDirName:" + targetDirName);
@@ -157,9 +154,9 @@ namespace SuperTimestamp
 
                 // Enhance search by scanning for increment number if present
                 Regex regexSameNameInDirectory = new Regex(targetNameRootAndTimestampNew + @"_(\d+)");
-                
+
                 // Inspect each match to find highest increment number
-                foreach(string matchPathFound in matchPathsFound)
+                foreach (string matchPathFound in matchPathsFound)
                 {
                     Match matchSameNameInDirectory = regexSameNameInDirectory.Match(matchPathFound);
                     int foundIncrement;
@@ -175,7 +172,7 @@ namespace SuperTimestamp
                     }
 
                     // If the increment number beats the record
-                    if(foundIncrement > foundIncrementMax)
+                    if (foundIncrement > foundIncrementMax)
                     {
                         // Store the new record
                         foundIncrementMax = foundIncrement;
@@ -183,7 +180,7 @@ namespace SuperTimestamp
 
                 }
                 DebugOutput("Max Increment Found:" + foundIncrementMax);
-                
+
             }
             else
             {
@@ -204,7 +201,8 @@ namespace SuperTimestamp
 
             // Construct Entire new path
             // add backslash if needed
-            string targetPathNew = targetDirName + '\\' + targetNameNew + targetExt;
+            //string targetPathNew = targetDirName + '\\' + targetNameNew + targetExt;
+            string targetPathNew = System.IO.Path.Combine(new string[] { targetDirName, targetNameNew, targetExt });
             DebugOutput("targetPathNew:" + targetPathNew);
 
 
@@ -212,14 +210,14 @@ namespace SuperTimestamp
 
 
 
-            // Rename file using Move() method
+            // Copy file or directory
             if (ftype == FTYPE.DIR)
             {
-                System.IO.Directory.Move(targetPathPrev, targetPathNew);
+                DirectoryCopy(targetPathPrev, targetPathNew, true);
             }
             else
             {
-                System.IO.File.Move(targetPathPrev, targetPathNew);
+                System.IO.File.Copy(targetPathPrev, targetPathNew);
             }
 
 
@@ -233,6 +231,45 @@ namespace SuperTimestamp
             if (DEBUGGING)
             {
                 Console.WriteLine(s);
+            }
+        }
+
+        // https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
+        private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+        {
+            // Get the subdirectories for the specified directory.
+            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+
+            if (!dir.Exists)
+            {
+                throw new DirectoryNotFoundException(
+                    "Source directory does not exist or could not be found: "
+                    + sourceDirName);
+            }
+
+            DirectoryInfo[] dirs = dir.GetDirectories();
+            // If the destination directory doesn't exist, create it.
+            if (!Directory.Exists(destDirName))
+            {
+                Directory.CreateDirectory(destDirName);
+            }
+
+            // Get the files in the directory and copy them to the new location.
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string temppath = Path.Combine(destDirName, file.Name);
+                file.CopyTo(temppath, false);
+            }
+
+            // If copying subdirectories, copy them and their contents to new location.
+            if (copySubDirs)
+            {
+                foreach (DirectoryInfo subdir in dirs)
+                {
+                    string temppath = Path.Combine(destDirName, subdir.Name);
+                    DirectoryCopy(subdir.FullName, temppath, copySubDirs);
+                }
             }
         }
     }
