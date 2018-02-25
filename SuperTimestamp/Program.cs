@@ -227,12 +227,12 @@ namespace SuperTimestamp
             {
                 DebugOutput(ex.Message);
             }
-            
 
 
 
 
-            //Console.ReadKey();
+
+            Console.ReadKey();
         }
 
         public static void DebugOutput(string s)
