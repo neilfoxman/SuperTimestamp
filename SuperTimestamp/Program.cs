@@ -35,8 +35,10 @@ namespace SuperTimestamp
             {
                 targetPathPrev += " " + args[argidx];
             }
-            DebugOutput("targetPathPrev:" + targetPathPrev);
 
+            // when exe is in C:, the paths sometimes come in in short form such as PROGRA~1
+            targetPathPrev = Path.GetFullPath(targetPathPrev);   //  This line corrects that
+            DebugOutput("targetPathPrev:" + targetPathPrev);
 
 
 
@@ -49,10 +51,12 @@ namespace SuperTimestamp
             {
                 //Its a directory
                 ftype = FTYPE.DIR;
+                DebugOutput("Directory Detected");
             }
             else
             {
                 ftype = FTYPE.FILE;
+                DebugOutput("File Detected");
             }
 
 
@@ -232,7 +236,7 @@ namespace SuperTimestamp
 
 
 
-            Console.ReadKey();
+            //Console.ReadKey();
         }
 
         public static void DebugOutput(string s)
